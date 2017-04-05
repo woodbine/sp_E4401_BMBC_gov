@@ -39,18 +39,21 @@ def validateFilename(filename):
 
 def validateURL(url):
     try:
-        r = requests.get(url, allow_redirects=True, timeout=20)
+        r = urllib2.urlopen(url)
         count = 1
-        while r.status_code == 500 and count < 4:
+        while r.getcode() == 500 and count < 4:
             print ("Attempt {0} - Status code: {1}. Retrying.".format(count, r.status_code))
             count += 1
-            r = requests.get(url, allow_redirects=True, timeout=20)
+            r = urllib2.urlopen(url)
         sourceFilename = r.headers.get('Content-Disposition')
+
         if sourceFilename:
             ext = os.path.splitext(sourceFilename)[1].replace('"', '').replace(';', '').replace(' ', '')
+        elif r.headers['Content-Type'] == 'application/vnd.ms-excel':
+            ext = '.csv'
         else:
-            ext = os.path.splitext(r.headers['content-location'])[1]
-        validURL = r.status_code == 200
+            ext = os.path.splitext(url)[1]
+        validURL = r.getcode() == 200
         validFiletype = ext.lower() in ['.csv', '.xls', '.xlsx']
         return validURL, validFiletype
     except:
@@ -97,12 +100,12 @@ soup = BeautifulSoup(html, 'lxml')
 
 #### SCRAPE DATA
 
-block = soup.find('div', attrs = {'class':'article'})
+block = soup.find('div', attrs = {'class':'container container--page'})
 links = block.find_all('a', href =True)
 for link in links:
    if 'media' in link['href']:
         csvfile = link.text
-        url = 'https://www2.barnsley.gov.uk' + link['href']
+        url = 'https://www.barnsley.gov.uk' + link['href']
         csvYr = csvfile.strip().split(' ')[-1].strip()
         csvMth = csvfile.strip().split(' ')[0].strip()[:3]
         csvMth = convert_mth_strings(csvMth.upper())
