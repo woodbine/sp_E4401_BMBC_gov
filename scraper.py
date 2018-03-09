@@ -88,7 +88,7 @@ def convert_mth_strings ( mth_string ):
 #### VARIABLES 1.0
 
 entity_id = "E4401_BMBC_gov"
-url = "https://www2.barnsley.gov.uk/about-us/how-we-are-performing/local-government-transparency-code-2015/financial-information/expenditure-exceeding-500"
+url = "https://www.barnsley.gov.uk/services/our-council/information-we-publish/expenditure-over-gbp500/"
 errors = 0
 data = []
 
